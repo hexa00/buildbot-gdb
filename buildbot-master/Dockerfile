@@ -7,3 +7,5 @@ RUN pip install buildbot
 VOLUME /master
 # Web interface port
 EXPOSE 8010
+# Slave/Master control port
+EXPOSE 9989
