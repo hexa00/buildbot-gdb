@@ -5,5 +5,3 @@ RUN apt-cache search pip
 RUN apt-get -y install python-pip python-dev git
 RUN pip install buildbot-slave
 VOLUME /slave
-# Web interface port
-EXPOSE 9989
