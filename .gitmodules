@@ -1,0 +1,3 @@
+[submodule "volumes/buildbot-master"]
+	path = volumes/buildbot-master
+	url = git@github.com:hexa00/gdb-buildbot.git
