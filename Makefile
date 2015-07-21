@@ -18,7 +18,9 @@ run-master: buildbot-master/.image-stamp
 	docker run --rm -i -t \
 	  --publish 8010:8010 \
 	  --publish 9989:9989 \
-	  --volume $(PWD)/volumes/buildbot-master:/master \
+	  --volume $(PWD)/volumes/buildbot-master/master.cfg:/master/master.cfg:ro \
+	  --volume $(PWD)/volumes/buildbot-master/lib:/master/lib:ro \
+	  --name buildbot-master \
 	  buildbot-master:latest
 
 .PHONY: run-slave
