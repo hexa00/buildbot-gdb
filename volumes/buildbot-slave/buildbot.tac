@@ -27,7 +27,7 @@ except ImportError:
   # probably not yet twisted 8.2.0 and beyond, can't set log yet
   pass
 
-buildmaster_host = 'buildbot-master'
+buildmaster_host = '142.133.110.95'
 port = 9989
 slavename = 'hexa-slave'
 passwd = 'passhexa'

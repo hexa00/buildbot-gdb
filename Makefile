@@ -17,13 +17,12 @@ buildbot-%/.image-stamp: buildbot-%/Dockerfile
 run-master: buildbot-master/.image-stamp
 	docker run --rm -i -t \
 	  --publish 8010:8010 \
+	  --publish 9989:9989 \
 	  --volume $(PWD)/volumes/buildbot-master:/master \
-	  --name buildbot-master \
 	  buildbot-master:latest
 
 .PHONY: run-slave
 run-slave: buildbot-slave/.image-stamp
 	docker run --rm -i -t \
-	  --link buildbot-master \
 	  --volume $(PWD)/volumes/buildbot-slave:/slave \
 	  buildbot-slave:latest
