@@ -4,14 +4,17 @@ help:
 	@echo
 	@echo "Target can be one of:"
 	@echo "  - images: Build docker images"
-	@echo "  - run-master [CMD=<cmd>]: Run a master instance"
-	@echo "        CMD can be used to override the command ran in the container."
-	@echo "  - run-slave [CMD=<cmd>]: Run a slave instance"
-	@echo "        CMD can be used to override the command ran in the container."
+	@echo "  - run-master [CMD=<cmd>]"
+	@echo "        Run a master instance. CMD can be used to override the command ran in"
+	@echo "        the container."
+	@echo "  - run-slave SLAVE_MASTER_HOSTPORT=<hostport> SLAVE_NAME=<name> SLAVE_PASSWD=<passwd>"
+	@echo "        Run a slave instance."
 
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
+buildbot-master/.image-stamp: buildbot-master/run.sh
+buildbot-slave/.image-stamp: buildbot-slave/run.sh
 
 buildbot-%/.image-stamp: buildbot-%/Dockerfile
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
@@ -35,6 +38,8 @@ run-master: buildbot-master/.image-stamp
 
 .PHONY: run-slave
 run-slave: buildbot-slave/.image-stamp
+	touch twistd_$(SLAVE_NAME).log
 	docker run --rm -i -t \
-	  --volume $(PWD)/volumes/buildbot-slave:/slave \
-	  buildbot-slave:latest $(CMD)
+	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
+	  buildbot-slave:latest \
+	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)

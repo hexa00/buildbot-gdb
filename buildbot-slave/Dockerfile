@@ -20,4 +20,6 @@ RUN /etc/init.d/ntp restart
 
 RUN pip install buildbot-slave
 
-VOLUME /slave
+COPY run.sh /run.sh
+
+CMD /run.sh
