@@ -24,15 +24,16 @@ CMD ?= /run.sh
 
 .PHONY: run-master
 run-master: buildbot-master/.image-stamp
-	if [ ! -f state.sqlite ]; then \
-		cp state.sqlite.empty state.sqlite; \
+	mkdir -p buildbot-master-data
+	if [ ! -f buildbot-master-data/state.sqlite ]; then \
+		cp state.sqlite.empty buildbot-master-data/state.sqlite; \
 	fi
 	docker run --rm -i -t \
 	  --publish 8010:8010 \
 	  --publish 9989:9989 \
 	  --volume $(PWD)/volumes/buildbot-master/master.cfg:/master/master.cfg:ro \
 	  --volume $(PWD)/volumes/buildbot-master/lib:/master/lib:ro \
-	  --volume $(PWD)/state.sqlite:/master/state.sqlite:rw \
+	  --volume $(PWD)/buildbot-master-data:/master/data:rw \
 	  --name buildbot-master \
 	  buildbot-master:latest $(CMD)
 
