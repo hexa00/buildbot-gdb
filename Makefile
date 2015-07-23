@@ -13,6 +13,8 @@ help:
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
+buildbot-master/.image-stamp: buildbot-master/run.sh
+buildbot-slave/.image-stamp: buildbot-slave/run.sh
 
 buildbot-%/.image-stamp: buildbot-%/Dockerfile
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
