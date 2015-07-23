@@ -2,5 +2,5 @@
 *.pid
 *.hostname
 runtests*
-*.sqlite
 *-stamp
+buildbot-master-data
