@@ -28,12 +28,14 @@ run-master: buildbot-master/.image-stamp
 	if [ ! -f buildbot-master-data/state.sqlite ]; then \
 		cp state.sqlite.empty buildbot-master-data/state.sqlite; \
 	fi
+	touch twistd_master.log
 	docker run --rm -i -t \
 	  --publish 8010:8010 \
 	  --publish 9989:9989 \
 	  --volume $(PWD)/volumes/buildbot-master/master.cfg:/master/master.cfg:ro \
 	  --volume $(PWD)/volumes/buildbot-master/lib:/master/lib:ro \
 	  --volume $(PWD)/buildbot-master-data:/master/data:rw \
+	  --volume $(PWD)/twistd_master.log:/master/twistd.log:rw \
 	  --name buildbot-master \
 	  buildbot-master:latest $(CMD)
 
