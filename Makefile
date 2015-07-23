@@ -13,6 +13,8 @@ buildbot-%/.image-stamp: buildbot-%/Dockerfile
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
 	touch $@
 
+CMD ?= /run.sh
+
 .PHONY: run-master
 run-master: buildbot-master/.image-stamp
 	if [ ! -f state.sql ]; then \
@@ -25,10 +27,10 @@ run-master: buildbot-master/.image-stamp
 	  --volume $(PWD)/volumes/buildbot-master/lib:/master/lib:ro \
 	  --volume $(PWD)/state.sql:/master/state.sql:rw \
 	  --name buildbot-master \
-	  buildbot-master:latest
+	  buildbot-master:latest $(CMD)
 
 .PHONY: run-slave
 run-slave: buildbot-slave/.image-stamp
 	docker run --rm -i -t \
 	  --volume $(PWD)/volumes/buildbot-slave:/slave \
-	  buildbot-slave:latest
+	  buildbot-slave:latest $(CMD)
