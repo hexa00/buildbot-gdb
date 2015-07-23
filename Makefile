@@ -4,6 +4,10 @@ help:
 	@echo
 	@echo "Target can be one of:"
 	@echo "  - images: Build docker images"
+	@echo "  - run-master [CMD=<cmd>]: Run a master instance"
+	@echo "        CMD can be used to override the command ran in the container."
+	@echo "  - run-slave [CMD=<cmd>]: Run a slave instance"
+	@echo "        CMD can be used to override the command ran in the container."
 
 .PHONY: images
 images: buildbot-master/.image-stamp
