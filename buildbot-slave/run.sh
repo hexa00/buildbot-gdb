@@ -71,6 +71,8 @@ ccache -M 10G
 
 buildslave create-slave -r "/slave" "$master_hostport" "$slave_name" "$slave_passwd"
 
+echo "Starting buildbot slave..."
+
 env \
 	CCACHE_PREFIX=icecc \
 	PATH=/usr/lib/ccache:${PATH} \
