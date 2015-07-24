@@ -13,7 +13,6 @@ help:
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
-images: buildbot-slave-arm/.image-stamp
 buildbot-master/.image-stamp: buildbot-master/run.sh
 buildbot-slave/.image-stamp: buildbot-slave/run.sh
 
