@@ -51,7 +51,7 @@ run-slave: buildbot-slave/.image-stamp
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
 
 .PHONY: run-slave-arm
-run-slave: buildbot-slave-arm/.image-stamp
+run-slave-arm: buildbot-slave-arm/.image-stamp
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
