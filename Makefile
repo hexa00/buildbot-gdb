@@ -30,7 +30,7 @@ run-master: buildbot-master/.image-stamp
 		cp state.sqlite.empty buildbot-master-data/state.sqlite; \
 	fi
 	touch twistd_master.log
-	docker run --rm -i -t \
+	docker run -d \
 	  --publish 8010:8010 \
 	  --publish 9989:9989 \
 	  --volume $(PWD)/volumes/buildbot-master/master.cfg:/master/master.cfg:ro \
@@ -44,7 +44,7 @@ run-master: buildbot-master/.image-stamp
 .PHONY: run-slave
 run-slave: buildbot-slave/.image-stamp
 	touch twistd_$(SLAVE_NAME).log
-	docker run --rm -i -t \
+	docker run -d \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave:latest \
