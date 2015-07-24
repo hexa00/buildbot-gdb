@@ -13,8 +13,10 @@ help:
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
+images: buildbot-slave-arm/.image-stamp
 buildbot-master/.image-stamp: buildbot-master/run.sh
 buildbot-slave/.image-stamp: buildbot-slave/run.sh
+buildbot-slave-arm/.image-stamp: buildbot-slave-arm/run.sh
 
 buildbot-%/.image-stamp: buildbot-%/Dockerfile
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
@@ -48,4 +50,13 @@ run-slave: buildbot-slave/.image-stamp
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave:latest \
+	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+
+.PHONY: run-slave-arm
+run-slave: buildbot-slave-arm/.image-stamp
+	touch twistd_$(SLAVE_NAME).log
+	docker run -d \
+	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
+	  --name buildbot-$(SLAVE_NAME) \
+	  buildbot-slave-arm:latest \
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
