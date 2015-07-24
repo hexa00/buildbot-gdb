@@ -16,7 +16,6 @@ images: buildbot-slave/.image-stamp
 images: buildbot-slave-arm/.image-stamp
 buildbot-master/.image-stamp: buildbot-master/run.sh
 buildbot-slave/.image-stamp: buildbot-slave/run.sh
-buildbot-slave-arm/.image-stamp: buildbot-slave-arm/run.sh
 
 buildbot-%/.image-stamp: buildbot-%/Dockerfile
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
