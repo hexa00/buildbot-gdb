@@ -64,7 +64,7 @@ master_hostport="$1"; shift
 slave_name="$1"; shift
 slave_passwd="$1"; shift
 
-service iceccd start
+service iceccd restart
 
 ccache -F 0
 ccache -M 10G
@@ -77,4 +77,4 @@ env \
 	CCACHE_PREFIX=icecc \
 	PATH=/usr/lib/ccache:${PATH} \
 	${ICECC_VERSION_VAR} \
-	buildslave start --nodaemon "/slave"
+	buildslave restart --nodaemon "/slave"
