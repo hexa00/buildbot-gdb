@@ -28,7 +28,7 @@ function help_and_exit() {
 }
 
 if [ "$(uname -m)" != "x86_64" ]; then
-	ICECC_VERSION_VAR="ICECC_VERSION='x86_64:/ice-arm-cross-compiler.tar.gz'"
+	ICECC_VERSION_VAR="ICECC_VERSION=x86_64:/ice-arm-cross-compiler.tar.gz"
 fi
 
 args=$(getopt -o 'h' -l 'help' -n "$0" -- "$@")
