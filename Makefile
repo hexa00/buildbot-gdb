@@ -45,6 +45,7 @@ run-master: buildbot-master/.image-stamp
 run-slave: buildbot-slave/.image-stamp
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
+	  -p 10245:10245 \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave:latest \
@@ -54,6 +55,7 @@ run-slave: buildbot-slave/.image-stamp
 run-slave-arm: buildbot-slave-arm/.image-stamp
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
+	  -p 10245:10245 \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave-arm:latest \
