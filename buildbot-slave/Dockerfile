@@ -7,7 +7,8 @@ RUN apt-get update && \
     apt-get -y build-dep gdb
 
 
-RUN sed -i 's/ICECC_SCHEDULER_HOST=\"\"/ICECC_SCHEDULER_HOST=\"142.133.110.95\"/' /etc/icecc/icecc.conf
+RUN sed -i 's/ICECC_SCHEDULER_HOST=\"\"/ICECC_SCHEDULER_HOST=\"142.133.110.95\"/' /etc/icecc/icecc.conf && \
+    sed -i 's/ICECC_ALLOW_REMOTE=\"yes\"/ICECC_ALLOW_REMOTE=\"no\"/' /etc/icecc/icecc.conf
 
 RUN echo "America/Montreal" > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata
 
