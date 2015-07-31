@@ -33,7 +33,7 @@ run-master: buildbot-master/.image-stamp
 	docker run -d \
 	  --publish 8010:8010 \
 	  --publish 9989:9989 \
-	  --volume $(PWD)/volumes/buildbot-master/master.cfg:/master/master.cfg:ro \
+	  --volume $(PWD)/volumes/buildbot-master/master.cfg:/master/master.cfg:rw \
 	  --volume $(PWD)/volumes/buildbot-master/lib:/master/lib:ro \
 	  --volume $(PWD)/buildbot-master-data:/master/data:rw \
 	  --volume $(PWD)/buildbot-master-public_html:/master/public_html:rw \
