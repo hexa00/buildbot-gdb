@@ -9,6 +9,10 @@ help:
 	@echo "        the container."
 	@echo "  - run-slave SLAVE_MASTER_HOSTPORT=<hostport> SLAVE_NAME=<name> SLAVE_PASSWD=<passwd>"
 	@echo "        Run a slave instance."
+	@echo "  - stop-master"
+	@echo "        Stop and delete a running master instance."
+	@echo "  - stop-slave SLAVE_NAME=<name>"
+	@echo "        Stop and delete a running slave instance."
 
 .PHONY: images
 images: buildbot-master/.image-stamp
@@ -41,8 +45,20 @@ run-master: buildbot-master/.image-stamp
 	  --name buildbot-master \
 	  buildbot-master:latest $(CMD)
 
+.PHONY: stop-master
+stop-master:
+	docker stop buildbot-master
+	docker rm buildbot-master
+
+# Check that all variables required for run-slave are defined.
+.PHONY: check-run-slave
+check-run-slave:
+	@if [ -z "$(SLAVE_MASTER_HOSTPORT)" ]; then echo "Missing SLAVE_MASTER_HOSTPORT"; exit 1; fi
+	@if [ -z "$(SLAVE_NAME)" ]; then echo "Missing SLAVE_NAME"; exit 1; fi
+	@if [ -z "$(SLAVE_PASSWD)" ]; then echo "Missing SLAVE_PASSWD"; exit 1; fi
+
 .PHONY: run-slave
-run-slave: buildbot-slave/.image-stamp
+run-slave: buildbot-slave/.image-stamp | check-run-slave
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
 	  -p 10245:10245 \
@@ -52,7 +68,7 @@ run-slave: buildbot-slave/.image-stamp
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
 
 .PHONY: run-slave-on-host
-run-slave-on-host: buildbot-slave/.image-stamp
+run-slave-on-host: buildbot-slave/.image-stamp | check-run-slave
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
 	  --net=host \
@@ -62,7 +78,7 @@ run-slave-on-host: buildbot-slave/.image-stamp
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
 
 .PHONY: run-slave-arm
-run-slave-arm: buildbot-slave-arm/.image-stamp
+run-slave-arm: buildbot-slave-arm/.image-stamp | check-run-slave
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
 	  -p 10245:10245 \
@@ -70,3 +86,12 @@ run-slave-arm: buildbot-slave-arm/.image-stamp
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave-arm:latest \
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+
+.PHONY: check-stop-slave
+check-stop-slave:
+	@if [ -z "$(SLAVE_NAME)" ]; then echo "Missing SLAVE_NAME"; exit 1; fi
+
+.PHONY: stop-slave
+stop-slave: | check-stop-slave
+	docker stop buildbot-$(SLAVE_NAME)
+	docker rm buildbot-$(SLAVE_NAME)
