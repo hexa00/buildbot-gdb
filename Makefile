@@ -52,7 +52,7 @@ run-slave: buildbot-slave/.image-stamp
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
 
 .PHONY: run-slave-on-host
-run-slave: buildbot-slave/.image-stamp
+run-slave-on-host: buildbot-slave/.image-stamp
 	touch twistd_$(SLAVE_NAME).log
 	docker run -d \
 	  --net=host \
