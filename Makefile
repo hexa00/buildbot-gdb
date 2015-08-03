@@ -9,6 +9,10 @@ help:
 	@echo "        the container."
 	@echo "  - run-slave SLAVE_MASTER_HOSTPORT=<hostport> SLAVE_NAME=<name> SLAVE_PASSWD=<passwd>"
 	@echo "        Run a slave instance."
+	@echo "  - stop-master"
+	@echo "        Stop and delete a running master instance."
+	@echo "  - stop-slave SLAVE_NAME=<name>"
+	@echo "        Stop and delete a running slave instance."
 
 .PHONY: images
 images: buildbot-master/.image-stamp
@@ -41,6 +45,11 @@ run-master: buildbot-master/.image-stamp
 	  --name buildbot-master \
 	  buildbot-master:latest $(CMD)
 
+.PHONY: stop-master
+stop-master:
+	docker stop buildbot-master
+	docker rm buildbot-master
+
 .PHONY: run-slave
 run-slave: buildbot-slave/.image-stamp
 	touch twistd_$(SLAVE_NAME).log
@@ -70,3 +79,12 @@ run-slave-arm: buildbot-slave-arm/.image-stamp
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave-arm:latest \
 	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+
+.PHONY: check-stop-slave
+check-stop-slave:
+	@if [ -z "$(SLAVE_NAME)" ]; then echo "Missing SLAVE_NAME"; exit 1; fi
+
+.PHONY: stop-slave
+stop-slave: | check-stop-slave
+	docker stop buildbot-$(SLAVE_NAME)
+	docker rm buildbot-$(SLAVE_NAME)
