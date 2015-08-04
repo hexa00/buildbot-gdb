@@ -18,12 +18,19 @@ help:
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
 
-buildbot-master/.image-stamp: buildbot-master/run.sh buildbot-master/common buildbot-master/common/id_rsa buildbot-master/common/known_hosts
-buildbot-slave/.image-stamp: buildbot-slave/run.sh buildbot-slave/common buildbot-slave/common/id_rsa buildbot-slave/common/known_hosts
+# Flag that indicates when the docker image has been created.
+buildbot-%/.image-stamp: buildbot-%/Dockerfile buildbot-%/run.sh buildbot-%/common
+	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
+	touch $@
 
-buildbot-%/common: buildbot-common
-	cp -a $< $@
+# Common directory copied from buildbot-common to each image's directory,
+# since we can't use symlinks for that.
+buildbot-%/common: buildbot-common buildbot-common/id_rsa $(wildcard buildbot-common/*)
+	cp -R $< $@
+# To prevent make from trying to remove the directories it considers intermediate.
+.PRECIOUS: buildbot-%/common
 
+# Pseudo-target to fail the build if id_rsa has not been created by the user.
 buildbot-common/id_rsa:
 	@echo ""
 	@echo "You need to generate a password-less ssh key to use to connect to Gerrit before"
@@ -36,10 +43,6 @@ buildbot-common/id_rsa:
 	@echo "  https://gerrit.ericsson.se/#/settings/ssh-keys."
 	@echo ""
 	@exit 1
-
-buildbot-%/.image-stamp: buildbot-%/Dockerfile
-	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
-	touch $@
 
 CMD ?= /run.sh
 
