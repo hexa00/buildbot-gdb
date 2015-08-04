@@ -108,3 +108,12 @@ check-stop-slave:
 stop-slave: | check-stop-slave
 	docker stop buildbot-$(SLAVE_NAME)
 	docker rm buildbot-$(SLAVE_NAME)
+
+.PHONY: clean
+clean:
+	rm -rf buildbot-master/common
+	rm -rf buildbot-slave/common
+	rm -f buildbot-master/.image-stamp
+	rm -f buildbot-slave/.image-stamp
+	docker rmi buildbot-master || true
+	docker rmi buildbot-slave || true
