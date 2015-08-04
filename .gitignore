@@ -4,3 +4,7 @@
 runtests*
 *-stamp
 buildbot-master-data
+buildbot-master-public_html
+buildbot-*/common
+id_rsa
+id_rsa.pub
