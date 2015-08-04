@@ -24,6 +24,7 @@ RUN buildbot create-master /master
 
 COPY run.sh /run.sh
 COPY common/id_rsa /root/.ssh/id_rsa
+RUN chmod 600 /root/.ssh/id_rsa
 COPY common/known_hosts /etc/ssh/ssh_known_hosts
 
 # Web interface port and slave/master interaction port
