@@ -18,7 +18,12 @@ RUN echo "server ntp1.ericsson.se" >> /etc/ntp.conf && \
 
 RUN /etc/init.d/ntp restart
 
-RUN pip install buildbot-slave
+# Install buildbot from git in order to get the fix for GerritChangeSource.
+ENV BUILDBOT_COMMIT=33c1baccf1836150ac201ffdd34019f6877fd4b3
+RUN git clone https://github.com/buildbot/buildbot.git --branch eight buildbot-git && \
+    git -C buildbot-git checkout $BUILDBOT_COMMIT && \
+    pip install buildbot-git/slave && \
+    rm -rf buildbot-git
 
 COPY run.sh /run.sh
 
