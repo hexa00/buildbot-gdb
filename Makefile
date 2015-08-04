@@ -4,8 +4,8 @@ help:
 	@echo
 	@echo "Target can be one of:"
 	@echo "  - images: Build docker images"
-	@echo "  - run-master [CMD=<cmd>]"
-	@echo "        Run a master instance. CMD can be used to override the command ran in"
+	@echo "  - run-master [GERRIT_USER=username]
+	@echo "        Run a master instance."
 	@echo "        the container."
 	@echo "  - run-slave SLAVE_MASTER_HOSTPORT=<hostport> SLAVE_NAME=<name> SLAVE_PASSWD=<passwd>"
 	@echo "        Run a slave instance."
@@ -44,7 +44,7 @@ buildbot-common/id_rsa:
 	@echo ""
 	@exit 1
 
-CMD ?= /run.sh
+GERRIT_USER ?= $(shell whoami)
 
 .PHONY: run-master
 run-master: buildbot-master/.image-stamp
@@ -63,7 +63,7 @@ run-master: buildbot-master/.image-stamp
 	  --volume $(PWD)/buildbot-master-public_html:/master/public_html:rw \
 	  --volume $(PWD)/twistd_master.log:/master/twistd.log:rw \
 	  --name buildbot-master \
-	  buildbot-master:latest $(CMD)
+	  buildbot-master:latest /run.sh $(GERRIT_USER)
 
 .PHONY: stop-master
 stop-master:
@@ -85,7 +85,7 @@ run-slave: buildbot-slave/.image-stamp | check-run-slave
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave:latest \
-	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD) $(GERRIT_USER)
 
 .PHONY: run-slave-on-host
 run-slave-on-host: buildbot-slave/.image-stamp | check-run-slave
