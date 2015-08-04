@@ -26,7 +26,7 @@ RUN git clone https://github.com/buildbot/buildbot.git --branch eight buildbot-g
     rm -rf buildbot-git
 
 COPY run.sh /run.sh
-COPY id_rsa_buildbot_to_gerrit /root/.ssh/id_rsa
-COPY known_hosts /etc/ssh/ssh_known_hosts
+COPY common/id_rsa /root/.ssh/id_rsa
+COPY common/known_hosts /etc/ssh/ssh_known_hosts
 
 CMD /run.sh

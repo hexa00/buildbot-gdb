@@ -17,10 +17,14 @@ help:
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
-buildbot-master/.image-stamp: buildbot-master/run.sh buildbot-master/id_rsa
-buildbot-slave/.image-stamp: buildbot-slave/run.sh buildbot-slave/id_rsa
 
-buildbot-%/id_rsa:
+buildbot-master/.image-stamp: buildbot-master/run.sh buildbot-master/common buildbot-master/common/id_rsa buildbot-master/common/known_hosts
+buildbot-slave/.image-stamp: buildbot-slave/run.sh buildbot-slave/common buildbot-slave/common/id_rsa buildbot-slave/common/known_hosts
+
+buildbot-%/common: buildbot-common
+	cp -a $< $@
+
+buildbot-common/id_rsa:
 	@echo ""
 	@echo "You need to generate a password-less ssh key to use to connect to Gerrit before"
 	@echo "generating the docker images.  You can do so by running:"
