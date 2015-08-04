@@ -17,8 +17,21 @@ help:
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
-buildbot-master/.image-stamp: buildbot-master/run.sh
-buildbot-slave/.image-stamp: buildbot-slave/run.sh
+buildbot-master/.image-stamp: buildbot-master/run.sh buildbot-master/id_rsa
+buildbot-slave/.image-stamp: buildbot-slave/run.sh buildbot-slave/id_rsa
+
+buildbot-%/id_rsa:
+	@echo ""
+	@echo "You need to generate a password-less ssh key to use to connect to Gerrit before"
+	@echo "generating the docker images.  You can do so by running:"
+	@echo ""
+	@echo "  $$ ssh-keygen -f $@ -P ''"
+	@echo ""
+	@echo "Don't forget to add the public key in"
+	@echo ""
+	@echo "  https://gerrit.ericsson.se/#/settings/ssh-keys."
+	@echo ""
+	@exit 1
 
 buildbot-%/.image-stamp: buildbot-%/Dockerfile
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))

@@ -23,6 +23,8 @@ RUN git clone https://github.com/buildbot/buildbot.git --branch eight buildbot-g
 RUN buildbot create-master /master
 
 COPY run.sh /run.sh
+COPY id_rsa_buildbot_to_gerrit /root/.ssh/id_rsa
+COPY known_hosts /etc/ssh/ssh_known_hosts
 
 # Web interface port and slave/master interaction port
 EXPOSE 8010 9989
