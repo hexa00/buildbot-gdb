@@ -95,7 +95,7 @@ run-slave-on-host: buildbot-slave/.image-stamp | check-run-slave
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave:latest \
-	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD) $(GERRIT_USER)
 
 .PHONY: run-slave-arm
 run-slave-arm: buildbot-slave-arm/.image-stamp | check-run-slave
@@ -105,7 +105,7 @@ run-slave-arm: buildbot-slave-arm/.image-stamp | check-run-slave
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave-arm:latest \
-	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD) $(GERRIT_USER)
 
 .PHONY: check-stop-slave
 check-stop-slave:
