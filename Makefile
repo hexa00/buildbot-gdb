@@ -4,8 +4,8 @@ help:
 	@echo
 	@echo "Target can be one of:"
 	@echo "  - images: Build docker images"
-	@echo "  - run-master [CMD=<cmd>]"
-	@echo "        Run a master instance. CMD can be used to override the command ran in"
+	@echo "  - run-master [GERRIT_USER=username]
+	@echo "        Run a master instance."
 	@echo "        the container."
 	@echo "  - run-slave SLAVE_MASTER_HOSTPORT=<hostport> SLAVE_NAME=<name> SLAVE_PASSWD=<passwd>"
 	@echo "        Run a slave instance."
@@ -17,14 +17,34 @@ help:
 .PHONY: images
 images: buildbot-master/.image-stamp
 images: buildbot-slave/.image-stamp
-buildbot-master/.image-stamp: buildbot-master/run.sh
-buildbot-slave/.image-stamp: buildbot-slave/run.sh
 
-buildbot-%/.image-stamp: buildbot-%/Dockerfile
+# Flag that indicates when the docker image has been created.
+buildbot-%/.image-stamp: buildbot-%/Dockerfile buildbot-%/run.sh buildbot-%/common
 	docker build -t $(subst /,,$(dir $<)) $(subst /,,$(dir $<))
 	touch $@
 
-CMD ?= /run.sh
+# Common directory copied from buildbot-common to each image's directory,
+# since we can't use symlinks for that.
+buildbot-%/common: buildbot-common buildbot-common/id_rsa $(wildcard buildbot-common/*)
+	cp -R $< $@
+# To prevent make from trying to remove the directories it considers intermediate.
+.PRECIOUS: buildbot-%/common
+
+# Pseudo-target to fail the build if id_rsa has not been created by the user.
+buildbot-common/id_rsa:
+	@echo ""
+	@echo "You need to generate a password-less ssh key to use to connect to Gerrit before"
+	@echo "generating the docker images.  You can do so by running:"
+	@echo ""
+	@echo "  $$ ssh-keygen -f $@ -P ''"
+	@echo ""
+	@echo "Don't forget to add the public key in"
+	@echo ""
+	@echo "  https://gerrit.ericsson.se/#/settings/ssh-keys."
+	@echo ""
+	@exit 1
+
+GERRIT_USER ?= $(shell whoami)
 
 .PHONY: run-master
 run-master: buildbot-master/.image-stamp
@@ -43,7 +63,7 @@ run-master: buildbot-master/.image-stamp
 	  --volume $(PWD)/buildbot-master-public_html:/master/public_html:rw \
 	  --volume $(PWD)/twistd_master.log:/master/twistd.log:rw \
 	  --name buildbot-master \
-	  buildbot-master:latest $(CMD)
+	  buildbot-master:latest /run.sh $(GERRIT_USER)
 
 .PHONY: stop-master
 stop-master:
@@ -65,7 +85,7 @@ run-slave: buildbot-slave/.image-stamp | check-run-slave
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
 	  buildbot-slave:latest \
-	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD)
+	  /run.sh $(SLAVE_MASTER_HOSTPORT) $(SLAVE_NAME) $(SLAVE_PASSWD) $(GERRIT_USER)
 
 .PHONY: run-slave-on-host
 run-slave-on-host: buildbot-slave/.image-stamp | check-run-slave
@@ -95,3 +115,12 @@ check-stop-slave:
 stop-slave: | check-stop-slave
 	docker stop buildbot-$(SLAVE_NAME)
 	docker rm buildbot-$(SLAVE_NAME)
+
+.PHONY: clean
+clean:
+	rm -rf buildbot-master/common
+	rm -rf buildbot-slave/common
+	rm -f buildbot-master/.image-stamp
+	rm -f buildbot-slave/.image-stamp
+	docker rmi buildbot-master || true
+	docker rmi buildbot-slave || true
