@@ -3,7 +3,7 @@ FROM mazzolino/armhf-ubuntu:14.04
 COPY ice-arm-cross-compiler.tar.gz /
 
 RUN apt-get update && \
-    apt-get -y install python-pip python-dev git ntpdate ntp ccache icecc && \
+    apt-get -y install python-pip python-dev git ntpdate ntp ccache icecc gcc-multilib && \
     apt-get -y build-dep gdb
 
 
