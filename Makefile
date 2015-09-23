@@ -4,7 +4,7 @@ help:
 	@echo
 	@echo "Target can be one of:"
 	@echo "  - images: Build docker images"
-	@echo "  - run-master [GERRIT_USER=username]
+	@echo "  - run-master [GERRIT_USER=username]"
 	@echo "        Run a master instance."
 	@echo "        the container."
 	@echo "  - run-slave SLAVE_MASTER_HOSTPORT=<hostport> SLAVE_NAME=<name> SLAVE_PASSWD=<passwd>"
