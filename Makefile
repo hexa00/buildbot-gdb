@@ -80,7 +80,7 @@ check-run-slave:
 .PHONY: run-slave
 run-slave: buildbot-slave/.image-stamp | check-run-slave
 	touch twistd_$(SLAVE_NAME).log
-	docker run -d \
+	docker run --security-opt seccomp:unconfined -d \
 	  -p 10245:10245 \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
@@ -90,7 +90,7 @@ run-slave: buildbot-slave/.image-stamp | check-run-slave
 .PHONY: run-slave-on-host
 run-slave-on-host: buildbot-slave/.image-stamp | check-run-slave
 	touch twistd_$(SLAVE_NAME).log
-	docker run -d \
+	docker run --security-opt seccomp:unconfined -d \
 	  --net=host \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
@@ -100,7 +100,7 @@ run-slave-on-host: buildbot-slave/.image-stamp | check-run-slave
 .PHONY: run-slave-arm
 run-slave-arm: buildbot-slave-arm/.image-stamp | check-run-slave
 	touch twistd_$(SLAVE_NAME).log
-	docker run -d \
+	docker run --security-opt seccomp:unconfined -d \
 	  -p 10245:10245 \
 	  --volume $(PWD)/twistd_$(SLAVE_NAME).log:/slave/twistd.log:rw \
 	  --name buildbot-$(SLAVE_NAME) \
